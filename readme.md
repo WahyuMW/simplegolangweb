@@ -1,1 +1,1 @@
-*simple website using golang
+#simple website using golang
