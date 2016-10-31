@@ -1,12 +1,13 @@
 package main
 
 import (
-		"encoding/json"
+		//"encoding/json"
         "fmt"
         "net/http"
         "html/template"
   	  	"log"
-   // 	"strings"
+  	  	"regexp"
+  	  	"strconv"
 
 )
 
@@ -34,19 +35,29 @@ func input(w http.ResponseWriter, r *http.Request) {
         // logic part of input
         fmt.Println("country code:", r.Form["code"])
         fmt.Println("phone number:", r.Form["phone_num"])
-        fmt.Fprintf(w, "Response: 200 \n")
-
-		var jsonData, err = json.Marshal(r.Form)
-		if err != nil {
-		fmt.Println(err.Error())
-		}
-		var jsonString = string(jsonData)
-		fmt.Fprintf(w, jsonString)
+		num := r.FormValue("phone_num")
+		s := strconv.Itoa(regex(num))
+		fmt.Fprintf(w, "Country Code: ")
+		fmt.Fprintf(w, r.FormValue("code"))
+		fmt.Fprintf(w, "\nPhone Number: ")
+		fmt.Fprintf(w, num)
+		fmt.Fprintf(w, "\nRespons: ")
+		fmt.Fprintf(w, s)	
 
     }
 }
 
-
+func regex(num string) int {
+	 match, _ := regexp.MatchString("^08[0-9]{9,11}$", num )
+    fmt.Println("regexp: ", match)
+    if match == true {
+    	respons := 200
+    	return respons
+    } else {
+    	respons := 400
+    	return respons
+    }
+}
 
 func main() {  
 //	http.HandleFunc("/", welcome) // setting router rule
