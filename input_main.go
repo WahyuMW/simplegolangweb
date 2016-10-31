@@ -9,6 +9,8 @@ import (
   	  	"regexp"
   	  	"strconv"
 
+  	  	//"strings"
+
 )
 
 /*
@@ -25,6 +27,8 @@ func welcome(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "welocme to input page") // write data to response
 }
 */
+
+
 func input(w http.ResponseWriter, r *http.Request) {
     fmt.Println("method:", r.Method) //get request method
     if r.Method == "GET" {
@@ -36,19 +40,28 @@ func input(w http.ResponseWriter, r *http.Request) {
         fmt.Println("country code:", r.Form["code"])
         fmt.Println("phone number:", r.Form["phone_num"])
 		num := r.FormValue("phone_num")
-		s := strconv.Itoa(regex(num))
-		fmt.Fprintf(w, "Country Code: ")
-		fmt.Fprintf(w, r.FormValue("code"))
-		fmt.Fprintf(w, "\nPhone Number: ")
-		fmt.Fprintf(w, num)
-		fmt.Fprintf(w, "\nRespons: ")
-		fmt.Fprintf(w, s)	
+		code := r.FormValue("code")
+
+		//zero elimination
+		var numint int
+		if _, err := fmt.Sscanf(num, "%14d", &numint); err != nil {
+			fmt.Println("err")
+		}
+		numstring := strconv.Itoa(numint)
+		finalnum :=code+numstring
+		returncode := strconv.Itoa(regex(numstring))
+
+		fmt.Println(finalnum)
+		fmt.Fprintf(w, "Phone Number: ")
+		fmt.Fprintf(w, finalnum)
+		fmt.Fprintf(w, "\nReturn ")
+		fmt.Fprintf(w, returncode)	
 
     }
 }
 
-func regex(num string) int {
-	 match, _ := regexp.MatchString("^08[0-9]{9,11}$", num )
+func regex(numstring string) int {
+	 match, _ := regexp.MatchString("^8[0-9]{9,11}$", numstring )
     fmt.Println("regexp: ", match)
     if match == true {
     	respons := 200
@@ -67,5 +80,3 @@ func main() {
 	        log.Fatal("ListenAndServe: ", err)
 	    }
 }
-
-//func validation ()
